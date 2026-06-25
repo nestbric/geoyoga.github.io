@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoYoga – Geometría Sagrada en Movimiento</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sage:#7A8C6E;
+  --sage-light:#B5C4A8;
+  --sage-pale:#E8EDE4;
+  --earth:#8B6F47;
+  --earth-light:#C4A882;
+  --earth-pale:#F2EAE0;
+  --stone:#6B7B6E;
+  --cream:#FAF7F2;
+  --cream2:#F0EAE0;
+  --ink:#2C3028;
+  --ink2:#3D4237;
+  --muted:#8A9080;
+  --gold:#B8935A;
+  --gold-light:#D4B483;
+  --white:#FFFFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* LANG */
+.lang-toggle{display:flex;gap:0;border:1px solid var(--sage-light);overflow:hidden;border-radius:2px}
+.lang-btn{padding:.3rem .7rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.lang-btn.active{background:var(--sage);color:var(--white)}
+[data-lang]{display:none}
+.lang-es [data-lang="es"]{display:block}
+.lang-fr [data-lang="fr"]{display:block}
+.lang-es [data-lang="es"].il,.lang-fr [data-lang="fr"].il{display:inline}
+.il{display:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;background:rgba(250,247,242,0.93);backdrop-filter:blur(10px);border-bottom:.5px solid rgba(122,140,110,0.2);gap:1rem;flex-wrap:wrap}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;letter-spacing:.12em;color:var(--sage);text-decoration:none}
+.nav-logo span{font-style:italic;color:var(--earth)}
+.nav-right{display:flex;align-items:center;gap:2rem}
+nav ul{list-style:none;display:flex;gap:1.8rem;align-items:center}
+nav ul a{text-decoration:none;font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);transition:color .3s}
+nav ul a:hover{color:var(--sage)}
+.nav-agendar{padding:.5rem 1.1rem;border:1px solid var(--sage);color:var(--sage);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .3s;position:relative;overflow:hidden}
+.nav-agendar::before{content:'';position:absolute;inset:0;background:var(--sage);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:0}
+.nav-agendar span{position:relative;z-index:1}
+.nav-agendar:hover::before{transform:scaleX(1)}
+.nav-agendar:hover{color:var(--white)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8rem 6vw 5rem;position:relative;overflow:hidden;background:linear-gradient(160deg,#EFF3EB 0%,#F5EFE6 50%,#EAF0E6 100%)}
+.geo-canvas{position:absolute;inset:0;pointer-events:none}
+.hero-eyebrow{font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--sage);margin-bottom:1.5rem;position:relative;z-index:1}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,7rem);font-weight:300;line-height:1.05;letter-spacing:.04em;margin-bottom:.4rem;position:relative;z-index:1}
+.hero h1 em{font-style:italic;color:var(--earth)}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2.5vw,1.45rem);font-weight:300;font-style:italic;color:var(--stone);margin-bottom:2.5rem;letter-spacing:.05em;position:relative;z-index:1}
+.hero-desc{max-width:520px;font-size:.93rem;line-height:1.9;color:rgba(44,48,40,.7);margin-bottom:3rem;position:relative;z-index:1}
+.btn-group{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+
+/* BUTTONS with polyhedron detail */
+.btn-primary{padding:.85rem 2rem;border:1.5px solid var(--sage);background:transparent;color:var(--sage);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .35s;position:relative;display:inline-flex;align-items:center;gap:.6rem}
+.btn-primary::before{content:'';position:absolute;inset:0;background:var(--sage);transform:scaleX(0);transform-origin:left;transition:transform .35s;z-index:0}
+.btn-primary:hover::before{transform:scaleX(1)}
+.btn-primary:hover{color:var(--white)}
+.btn-primary span,.btn-primary svg{position:relative;z-index:1}
+.btn-secondary{padding:.85rem 2rem;border:1.5px solid rgba(107,123,110,.35);background:transparent;color:var(--stone);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .3s;display:inline-flex;align-items:center;gap:.6rem}
+.btn-secondary:hover{border-color:var(--earth);color:var(--earth)}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.scroll-line{width:1px;height:38px;background:linear-gradient(to bottom,var(--sage),transparent);animation:scrollAnim 1.8s ease-in-out infinite}
+@keyframes scrollAnim{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* SECTIONS */
+section{padding:6rem 6vw}
+.section-label{font-size:.67rem;letter-spacing:.25em;text-transform:uppercase;color:var(--sage);margin-bottom:1rem}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:300;line-height:1.15;margin-bottom:1.5rem}
+.section-title em{font-style:italic;color:var(--earth)}
+.divider{width:55px;height:1px;background:var(--earth-light);margin:1.5rem 0}
+
+/* MÉTODO */
+.metodo{background:var(--white)}
+.metodo-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1100px;margin:0 auto}
+.metodo-text p{font-size:.93rem;line-height:1.9;color:rgba(44,48,40,.75);margin-bottom:1.1rem}
+.metodo-pillars{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.pillar{padding:1.5rem;border:.5px solid rgba(122,140,110,.2);background:var(--sage-pale);position:relative;overflow:hidden}
+.pillar::after{content:'';position:absolute;bottom:-20px;right:-20px;width:60px;height:60px;opacity:.08}
+.pillar-icon{font-size:1.4rem;margin-bottom:.9rem;display:block}
+.pillar h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--sage);margin-bottom:.5rem}
+.pillar p{font-size:.82rem;line-height:1.75;color:rgba(44,48,40,.65)}
+
+/* GALERÍA */
+.galeria{background:var(--cream)}
+.galeria-header{max-width:1100px;margin:0 auto 3rem}
+.foto-cats{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:3rem}
+.foto-cat-label{font-size:.67rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sage);border-left:2px solid var(--sage-light);padding-left:.8rem;margin-bottom:1rem}
+.foto-row-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:.8rem}
+.foto-row-1{display:grid;grid-template-columns:1fr 1.6fr;gap:.8rem;align-items:stretch}
+.foto-item{overflow:hidden;position:relative}
+.foto-item img{width:100%;height:100%;min-height:260px;object-fit:cover;display:block;filter:brightness(.92) saturate(.85);transition:transform .6s ease,filter .4s}
+.foto-item:hover img{transform:scale(1.04);filter:brightness(1) saturate(.95)}
+.foto-caption{position:absolute;bottom:0;left:0;right:0;padding:.7rem 1rem;background:linear-gradient(transparent,rgba(44,48,40,.75));font-size:.73rem;letter-spacing:.08em;color:rgba(250,247,242,.9)}
+.foto-texto-cat{display:flex;flex-direction:column;justify-content:center;padding:2rem;border:.5px solid rgba(122,140,110,.2);background:var(--sage-pale)}
+.foto-texto-cat h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--sage);margin-bottom:.8rem;line-height:1.3}
+.foto-texto-cat p{font-size:.84rem;line-height:1.8;color:rgba(44,48,40,.65)}
+
+/* SOBRE */
+.sobre{background:var(--earth-pale)}
+.sobre-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1.5fr;gap:5rem;align-items:start}
+.sobre-foto-wrap{position:relative;z-index:1}
+.sobre-foto-wrap img{width:100%;display:block;filter:brightness(.93) saturate(.85)}
+.sobre-foto-frame{position:absolute;top:-1rem;left:-1rem;right:1rem;bottom:1rem;border:1px solid rgba(184,147,90,.35);pointer-events:none;z-index:0}
+.sobre-text .intro{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;font-style:italic;color:var(--earth);margin-bottom:1.5rem;line-height:1.65}
+.sobre-text p{font-size:.92rem;line-height:1.9;color:rgba(44,48,40,.76);margin-bottom:1rem}
+.formacion{margin-top:2.5rem}
+.formacion-title{font-size:.67rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sage);border-left:2px solid var(--sage-light);padding-left:.8rem;margin-bottom:1.5rem}
+.timeline{display:flex;flex-direction:column;position:relative}
+.timeline::before{content:'';position:absolute;left:48px;top:0;bottom:0;width:.5px;background:rgba(122,140,110,.25)}
+.tl-item{display:grid;grid-template-columns:48px 1fr;gap:1rem;padding-bottom:1.4rem;position:relative}
+.tl-year{font-size:.66rem;letter-spacing:.04em;color:var(--earth);padding-top:.2rem;text-align:right;line-height:1.4}
+.tl-dot{position:absolute;left:42px;top:.35rem;width:7px;height:7px;border-radius:50%;background:var(--earth-light);z-index:1}
+.tl-content{padding-left:1.1rem}
+.tl-deg{font-size:.86rem;color:var(--ink);line-height:1.5;margin-bottom:.2rem}
+.tl-inst{font-size:.74rem;color:var(--muted)}
+.yoga-certs{margin-top:.5rem;display:flex;flex-direction:column;gap:.7rem}
+.cert-item{display:flex;align-items:flex-start;gap:1rem;padding:.85rem 1rem;border-left:2px solid var(--earth-light);background:rgba(196,168,130,.08)}
+.cert-item .year{font-size:.68rem;letter-spacing:.08em;color:var(--earth);white-space:nowrap;padding-top:2px}
+.cert-item .cert-title{font-size:.84rem;color:var(--ink);line-height:1.5}
+.cert-item .cert-inst{font-size:.73rem;color:var(--muted)}
+
+/* SERVICIOS */
+.servicios{background:var(--white)}
+.servicios-inner{max-width:1100px;margin:0 auto}
+.servicios-header{margin-bottom:3.5rem}
+.servicios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.servicio-card{padding:1.8rem 1.5rem;border:.5px solid rgba(122,140,110,.2);background:var(--cream);transition:border-color .3s,background .3s;position:relative;overflow:hidden}
+.servicio-card::after{content:'';position:absolute;bottom:-15px;right:-15px;opacity:.06;pointer-events:none}
+.servicio-card:hover{border-color:rgba(122,140,110,.45);background:var(--sage-pale)}
+.serv-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:rgba(122,140,110,.12);position:absolute;top:.8rem;right:1rem;line-height:1}
+.serv-icon{font-size:1.3rem;margin-bottom:1.1rem;display:block}
+.servicio-card h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;color:var(--sage);margin-bottom:.7rem}
+.servicio-card p{font-size:.83rem;line-height:1.8;color:rgba(44,48,40,.62)}
+
+/* AGENDAR */
+.agendar{background:var(--sage-pale)}
+.agendar-inner{max-width:760px;margin:0 auto;text-align:center}
+.agendar-desc{font-size:.93rem;line-height:1.85;color:rgba(44,48,40,.68);margin-bottom:2.5rem}
+.agenda-form{text-align:left}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:.8rem 1rem;background:var(--white);border:.5px solid rgba(122,140,110,.3);color:var(--ink);font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .3s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--sage)}
+.form-group select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A8C6E'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{width:100%;padding:1rem;background:var(--sage);color:var(--white);border:none;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:background .3s;display:flex;align-items:center;justify-content:center;gap:.8rem}
+.btn-submit:hover{background:var(--stone)}
+.btn-submit svg{flex-shrink:0}
+.form-success{display:none;padding:1rem;border:.5px solid var(--sage);color:var(--sage);text-align:center;font-size:.86rem;margin-top:1rem;background:rgba(122,140,110,.06)}
+
+/* CONTACTO */
+.contacto{background:var(--cream2);text-align:center}
+.contacto-inner{max-width:640px;margin:0 auto}
+.contacto-desc{font-size:.93rem;line-height:1.85;color:rgba(44,48,40,.68);margin-bottom:2.5rem}
+.contact-links{display:flex;flex-direction:column;gap:.9rem;align-items:center}
+.contact-link{display:flex;align-items:center;gap:1rem;font-size:.88rem;color:var(--ink2);text-decoration:none;padding:.8rem 1.5rem;border:.5px solid rgba(122,140,110,.25);width:100%;max-width:420px;transition:all .3s;background:var(--white)}
+.contact-link:hover{border-color:var(--sage);color:var(--sage)}
+.contact-link .icon{color:var(--sage);min-width:20px}
+
+/* FOOTER */
+footer{background:var(--ink);padding:2.5rem 6vw;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:var(--sage-light);letter-spacing:.12em}
+.footer-logo em{font-style:italic;color:var(--earth-light)}
+.footer-links{display:flex;gap:1.8rem;flex-wrap:wrap}
+.footer-links a{font-size:.72rem;letter-spacing:.08em;color:rgba(250,247,242,.4);text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:var(--sage-light)}
+footer p{font-size:.7rem;color:rgba(250,247,242,.3);letter-spacing:.05em}
+
+/* Poly SVG buttons */
+.poly-btn-icon{width:14px;height:14px;flex-shrink:0}
+
+/* BG polyhedra */
+.poly-bg-el{position:absolute;pointer-events:none;opacity:.07}
+
+@media(max-width:800px){
+  .metodo-grid,.sobre-inner{grid-template-columns:1fr;gap:2.5rem}
+  .servicios-grid{grid-template-columns:1fr 1fr}
+  .foto-row-3{grid-template-columns:1fr 1fr}
+  .foto-row-1{grid-template-columns:1fr}
+  nav ul{display:none}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:520px){.servicios-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="lang-es" id="body-root">
+
+<nav>
+  <a class="nav-logo" href="#inicio">Geo<span>Yoga</span></a>
+  <div class="nav-right">
+    <ul>
+      <li><a href="#metodo"><span data-lang="es">Método</span><span data-lang="fr" class="il">Méthode</span></a></li>
+      <li><a href="#galeria"><span data-lang="es">Galería</span><span data-lang="fr" class="il">Galerie</span></a></li>
+      <li><a href="#sobre"><span data-lang="es">Instructor</span><span data-lang="fr" class="il">Instructeur</span></a></li>
+      <li><a href="#servicios"><span data-lang="es">Servicios</span><span data-lang="fr" class="il">Services</span></a></li>
+      <li>
+        <a href="#agendar" class="nav-agendar">
+          <span><span data-lang="es">Agendar clase</span><span data-lang="fr" class="il">Réserver</span></span>
+        </a>
+      </li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <!-- SVG geometric background: icosahedron faces, hexagons, pentagons, triangles -->
+  <svg class="geo-canvas" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="var(--sage)" stroke-width="0.7" opacity="0.18">
+      <!-- Large icosahedron projection center -->
+      <polygon points="600,80 680,220 520,220" />
+      <polygon points="600,80 680,220 740,140" />
+      <polygon points="600,80 520,220 460,140" />
+      <polygon points="680,220 740,140 800,220" />
+      <polygon points="460,140 520,220 400,220" />
+      <polygon points="680,220 800,220 740,320" />
+      <polygon points="520,220 400,220 460,320" />
+      <polygon points="680,220 520,220 600,360" />
+      <polygon points="800,220 740,320 600,360 680,220" />
+      <polygon points="400,220 460,320 600,360 520,220" />
+      <!-- Hexagons scattered -->
+      <polygon points="150,150 190,127 230,150 230,196 190,219 150,196"/>
+      <polygon points="980,100 1020,77 1060,100 1060,146 1020,169 980,146"/>
+      <polygon points="50,500 90,477 130,500 130,546 90,569 50,546"/>
+      <polygon points="1100,600 1140,577 1180,600 1180,646 1140,669 1100,646"/>
+      <!-- Pentagons -->
+      <polygon points="900,450 940,422 980,450 966,494 914,494"/>
+      <polygon points="200,600 240,572 280,600 266,644 214,644"/>
+      <!-- Dodecahedron face top-right -->
+      <polygon points="1050,200 1090,174 1130,200 1130,250 1090,276 1050,250"/>
+      <!-- Triangles -->
+      <polygon points="300,350 340,280 380,350"/>
+      <polygon points="850,650 890,580 930,650"/>
+      <polygon points="100,300 130,250 160,300"/>
+      <!-- Outer circle icosahedron -->
+      <circle cx="600" cy="220" r="180" stroke-dasharray="4 8"/>
+      <circle cx="600" cy="220" r="280" stroke-dasharray="2 12" opacity=".5"/>
+      <!-- Connecting lines suggesting spatial geometry -->
+      <line x1="150" y1="196" x2="300" y2="350" stroke-dasharray="3 10"/>
+      <line x1="1060" y1="146" x2="930" y2="650" stroke-dasharray="3 10"/>
+      <line x1="50" y1="546" x2="200" y2="600" stroke-dasharray="3 10"/>
+    </g>
+    <!-- Earth-toned accent polygons -->
+    <g fill="none" stroke="var(--earth)" stroke-width="0.5" opacity="0.1">
+      <polygon points="700,550 740,520 780,550 766,596 714,596"/>
+      <polygon points="120,400 160,373 200,400 186,446 134,446"/>
+      <polygon points="1000,350 1040,323 1080,350 1066,396 1014,396"/>
+    </g>
+  </svg>
+
+  <p class="hero-eyebrow">GeoYoga · <span data-lang="es">Geometría Sagrada en Movimiento</span><span data-lang="fr" class="il">Géométrie Sacrée en Mouvement</span></p>
+  <h1>Geo<em>Yoga</em></h1>
+  <p class="hero-sub">
+    <span data-lang="es">El cuerpo como geometría viva</span>
+    <span data-lang="fr" class="il">Le corps comme géométrie vivante</span>
+  </p>
+  <p class="hero-desc">
+    <span data-lang="es">Un método que une yoga, danza contemporánea y geometría sagrada para explorar el cuerpo como instrumento de conocimiento, creación y conexión simbólica.</span>
+    <span data-lang="fr" class="il">Une méthode qui unit le yoga, la danse contemporaine et la géométrie sacrée pour explorer le corps comme instrument de connaissance, de création et de connexion symbolique.</span>
+  </p>
+  <div class="btn-group">
+    <a href="#agendar" class="btn-primary">
+      <!-- Icosahedron mini icon -->
+      <svg class="poly-btn-icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="7,1 13,5 13,9 7,13 1,9 1,5" stroke="currentColor" stroke-width="1" fill="none"/>
+        <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width=".7"/>
+        <line x1="1" y1="5" x2="13" y2="9" stroke="currentColor" stroke-width=".7"/>
+        <line x1="13" y1="5" x2="1" y2="9" stroke="currentColor" stroke-width=".7"/>
+      </svg>
+      <span><span data-lang="es">Agendar una clase</span><span data-lang="fr" class="il">Réserver un cours</span></span>
+    </a>
+    <a href="#metodo" class="btn-secondary">
+      <!-- Triangle/tetrahedron icon -->
+      <svg class="poly-btn-icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="7,1 13,12 1,12" stroke="currentColor" stroke-width="1" fill="none"/>
+        <line x1="7" y1="1" x2="7" y2="12" stroke="currentColor" stroke-width=".7"/>
+        <line x1="4" y1="6.5" x2="10" y2="6.5" stroke="currentColor" stroke-width=".7"/>
+      </svg>
+      <span><span data-lang="es">Descubrir el método</span><span data-lang="fr" class="il">Découvrir la méthode</span></span>
+    </a>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div></div>
+</section>
+
+<!-- MÉTODO -->
+<section class="metodo" id="metodo">
+  <div class="metodo-grid">
+    <div class="metodo-text">
+      <p class="section-label"><span data-lang="es">El método</span><span data-lang="fr" class="il">La méthode</span></p>
+      <h2 class="section-title"><span data-lang="es">Cuerpo como <em>geometría viva</em></span><span data-lang="fr" class="il">Le corps comme <em>géométrie vivante</em></span></h2>
+      <div class="divider"></div>
+      <p data-lang="es">GeoYoga parte de una premisa poderosa: el cuerpo humano es en sí mismo una estructura geométrica viva. Portador de proporciones áureas, trazador de espirales y poliedros invisibles en el espacio, puente entre lo físico y lo sagrado.</p>
+      <p data-lang="fr">GeoYoga part d'une prémisse puissante : le corps humain est en lui-même une structure géométrique vivante. Porteur de proportions dorées, traceur de spirales et de polyèdres invisibles dans l'espace, pont entre le physique et le sacré.</p>
+      <p data-lang="es">El método integra las formas universales —espirales, mandalas, el número áureo, yantras— como matrices vivas que pueden ser sentidas y encarnadas a través del movimiento, la respiración y la presencia consciente.</p>
+      <p data-lang="fr">La méthode intègre les formes universelles — spirales, mandalas, nombre d'or, yantras — comme matrices vivantes pouvant être ressenties et incarnées à travers le mouvement, la respiration et la présence consciente.</p>
+      <p data-lang="es">Desarrollado en el <strong>Laboratorio Phi</strong> bajo el concepto de <em>Phignosis</em> —conocimiento encarnado a través del movimiento y los trazados sagrados—, GeoYoga conecta ciencia, arte y espiritualidad.</p>
+      <p data-lang="fr">Développé au sein du <strong>Laboratoire Phi</strong> sous le concept de <em>Phignosis</em> — connaissance incarnée à travers le mouvement et les tracés sacrés —, GeoYoga relie science, art et spiritualité.</p>
+    </div>
+    <div class="metodo-pillars">
+      <div class="pillar">
+        <span class="pillar-icon">⬡</span>
+        <h4><span data-lang="es">Geometría incarnada</span><span data-lang="fr" class="il">Géométrie incarnée</span></h4>
+        <p data-lang="es">Poliedros, espirales y círculos vividos y sentidos por el cuerpo en movimiento.</p>
+        <p data-lang="fr">Polyèdres, spirales et cercles vécus et ressentis par le corps en mouvement.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">φ</span>
+        <h4><span data-lang="es">Proporciones sagradas</span><span data-lang="fr" class="il">Proportions sacrées</span></h4>
+        <p data-lang="es">Número áureo, Fibonacci y simetrías naturales en las posturas de yoga.</p>
+        <p data-lang="fr">Nombre d'or, Fibonacci et symétries naturelles dans les postures de yoga.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">◎</span>
+        <h4><span data-lang="es">Cartografía interior</span><span data-lang="fr" class="il">Cartographie intérieure</span></h4>
+        <p data-lang="es">El espacio interno del cuerpo como territorio geométrico. Visualización y tracé en el espacio.</p>
+        <p data-lang="fr">L'espace intérieur du corps comme territoire géométrique. Visualisation et tracé dans l'espace.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">✦</span>
+        <h4><span data-lang="es">Red colectiva viva</span><span data-lang="fr" class="il">Réseau collectif vivant</span></h4>
+        <p data-lang="es">Figuras creadas entre varios cuerpos, tejiendo una trama de geometría dinámica y relacional.</p>
+        <p data-lang="fr">Figures créées entre plusieurs corps, tissant une trame de géométrie dynamique et relationnelle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="galeria" id="galeria">
+  <div class="galeria-header">
+    <p class="section-label"><span data-lang="es">Galería</span><span data-lang="fr" class="il">Galerie</span></p>
+    <h2 class="section-title"><span data-lang="es">El método en <em>práctica</em></span><span data-lang="fr" class="il">La méthode en <em>pratique</em></span></h2>
+  </div>
+  <div class="foto-cats">
+    <div>
+      <p class="foto-cat-label"><span data-lang="es">Clases y laboratorios colectivos</span><span data-lang="fr" class="il">Cours et laboratoires collectifs</span></p>
+      <div class="foto-row-3">
+        <div class="foto-item">
+          <img src="GeoYoga_Na1.jpg" alt="Red colectiva viva – círculo de movimiento consciente">
+          <div class="foto-caption"><span data-lang="es">Red colectiva · nodos energéticos</span><span data-lang="fr" class="il">Réseau collectif · nœuds énergétiques</span></div>
+        </div>
+        <div class="foto-item">
+          <img src="GeoYoga_Na2.jpg" alt="Laboratorio Phi – geometría colectiva">
+          <div class="foto-caption"><span data-lang="es">Laboratorio Phi · geometría en relación</span><span data-lang="fr" class="il">Laboratoire Phi · géométrie en relation</span></div>
+        </div>
+        <div class="foto-item">
+          <img src="GeoYoga_Na3.jpg" alt="Expansión lateral – dimensión horizontal">
+          <div class="foto-caption"><span data-lang="es">Expansión · dimensión horizontal</span><span data-lang="fr" class="il">Expansion · dimension horizontale</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="foto-cat-label"><span data-lang="es">Exploración individual y espacial</span><span data-lang="fr" class="il">Exploration individuelle et spatiale</span></p>
+      <div class="foto-row-1">
+        <div class="foto-texto-cat">
+          <h3><span data-lang="es">El cuerpo como brújula geométrica</span><span data-lang="fr" class="il">Le corps comme boussole géométrique</span></h3>
+          <p data-lang="es">Cada postura traza una figura invisible en el espacio. GeoYoga propone que el practicante descubra esas geometrías latentes desde adentro —a través de la respiración, el peso y la intención.</p>
+          <p data-lang="fr">Chaque posture trace une figure invisible dans l'espace. GeoYoga invite le praticien à découvrir ces géométries latentes de l'intérieur — à travers la respiration, le poids et l'intention.</p>
+        </div>
+        <div class="foto-item" style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+          <div style="position:relative;overflow:hidden">
+            <img src="GeoYoga_Na4.png" alt="Taller GeoYoga – trazos diagonales" style="min-height:300px">
+            <div class="foto-caption"><span data-lang="es">Taller · trazos diagonales</span><span data-lang="fr" class="il">Atelier · tracés diagonaux</span></div>
+          </div>
+          <div style="position:relative;overflow:hidden">
+            <img src="GuerreroII.png" alt="Guerrero II – práctica en espacio abierto" style="min-height:300px">
+            <div class="foto-caption"><span data-lang="es">Guerrero II · espacio abierto</span><span data-lang="fr" class="il">Guerrier II · espace ouvert</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section class="sobre" id="sobre">
+  <div class="sobre-inner">
+    <div class="sobre-foto-wrap">
+      <div class="sobre-foto-frame"></div>
+      <img src="GuerreroII.png" alt="Néstor Briceño Estepa – creador de GeoYoga">
+    </div>
+    <div class="sobre-text">
+      <p class="section-label"><span data-lang="es">El instructor</span><span data-lang="fr" class="il">L'instructeur</span></p>
+      <h2 class="section-title">Néstor Briceño <em>Estepa</em></h2>
+      <div class="divider"></div>
+      <p class="intro">"<span data-lang="es">El cuerpo es el primer instrumento geométrico que habitamos.</span><span data-lang="fr" class="il">Le corps est le premier instrument géométrique que nous habitons.</span>"</p>
+      <p data-lang="es">Docente e investigador del movimiento, Néstor Briceño Estepa ha construido una propuesta única que nace de la confluencia entre la enseñanza, la investigación pedagógica y la práctica profunda del yoga: el método GeoYoga.</p>
+      <p data-lang="fr">Enseignant et chercheur en mouvement, Néstor Briceño Estepa a développé une proposition unique née de la confluence entre l'enseignement, la recherche pédagogique et la pratique profonde du yoga : la méthode GeoYoga.</p>
+      <p data-lang="es">Su formación académica en universidades de Colombia, España y Francia le ha permitido desarrollar una perspectiva transdisciplinaria que integra la pedagogía, las humanidades digitales y las ciencias del cuerpo. En paralelo, su trayectoria en yoga terapéutico y geometría sagrada ha dado forma al <strong>Laboratorio Phi</strong>, espacio de investigación-creación donde nacen sus propuestas de movimiento consciente.</p>
+      <p data-lang="fr">Sa formation académique dans des universités de Colombie, d'Espagne et de France lui a permis de développer une perspective transdisciplinaire intégrant la pédagogie, les humanités numériques et les sciences du corps. En parallèle, son parcours en yoga thérapeutique et géométrie sacrée a donné naissance au <strong>Laboratoire Phi</strong>, espace de recherche-création où naissent ses propositions de mouvement conscient.</p>
+      <p data-lang="es">GeoYoga ha sido parte de la programación oficial de <strong>Danza en la Ciudad</strong> del Distrito Capital.</p>
+      <p data-lang="fr">GeoYoga a fait partie de la programmation officielle de <strong>Danza en la Ciudad</strong>.</p>
+
+      <!-- FORMACIÓN ACADÉMICA -->
+      <div class="formacion">
+        <p class="formacion-title"><span data-lang="es">Formación académica</span><span data-lang="fr" class="il">Formation académique</span></p>
+        <div class="timeline">
+          <div class="tl-item">
+            <span class="tl-year">2023–<br>2024</span>
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-deg"><span data-lang="es">Máster 2 – Análisis y Valorización de los Usos Digitales <em style="color:var(--earth);font-size:.78rem">(mención Très Bien)</em></span><span data-lang="fr" class="il">Master 2 – Analyse et Valorisation des Usages Numériques <em style="color:var(--earth);font-size:.78rem">(mention Très Bien)</em></span></div>
+              <div class="tl-inst">Université Paris 8 Vincennes Saint-Denis · Paris, France</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-year">2018–<br>2019</span>
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-deg"><span data-lang="es">Máster de Investigación – Enseñanza y Aprendizaje de las Ciencias</span><span data-lang="fr" class="il">Master de Recherche – Enseignement et Apprentissage des Sciences</span></div>
+              <div class="tl-inst"><span data-lang="es">Universidad de Extremadura · Beca Fundación Carolina</span><span data-lang="fr" class="il">Université d'Estrémadure · Bourse Fondation Carolina</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-year">2005–<br>2009</span>
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-deg"><span data-lang="es">Licenciatura en Educación – Matemáticas</span><span data-lang="fr" class="il">Licence en Éducation – Mathématiques</span></div>
+              <div class="tl-inst"><span data-lang="es">Universidad Pedagógica Nacional</span><span data-lang="fr" class="il">Université Pédagogique Nationale</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICACIONES YOGA -->
+      <div class="formacion">
+        <p class="formacion-title" style="margin-top:2rem"><span data-lang="es">Certificaciones en yoga</span><span data-lang="fr" class="il">Certifications en yoga</span></p>
+        <div class="yoga-certs">
+          <div class="cert-item">
+            <span class="year">2026</span>
+            <div>
+              <div class="cert-title"><span data-lang="es">Yoga y Ayurveda · 100 horas</span><span data-lang="fr" class="il">Yoga et Ayurveda · 100 heures</span></div>
+              <div class="cert-inst">Prema Mandal Yoga</div>
+            </div>
+          </div>
+          <div class="cert-item">
+            <span class="year">2025</span>
+            <div>
+              <div class="cert-title"><span data-lang="es">Yoga Terapéutico – Sistema Osteomuscular · 100 horas</span><span data-lang="fr" class="il">Yoga Thérapeutique – Système Ostéomusculaire · 100 heures</span></div>
+              <div class="cert-inst">Prema Mandal Yoga</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="servicios" id="servicios">
+  <div class="servicios-inner">
+    <div class="servicios-header">
+      <p class="section-label"><span data-lang="es">Lo que ofrezco</span><span data-lang="fr" class="il">Ce que je propose</span></p>
+      <h2 class="section-title"><span data-lang="es">Servicios y <em>propuestas</em></span><span data-lang="fr" class="il">Services et <em>propositions</em></span></h2>
+    </div>
+    <div class="servicios-grid">
+      <div class="servicio-card">
+        <span class="serv-num">01</span>
+        <span class="serv-icon">🧘</span>
+        <h3><span data-lang="es">Clases regulares de GeoYoga</span><span data-lang="fr" class="il">Cours réguliers de GeoYoga</span></h3>
+        <p data-lang="es">Sesiones de exploración somática, yoga y geometría sagrada para todos los niveles. Presenciales y virtuales.</p>
+        <p data-lang="fr">Séances d'exploration somatique, yoga et géométrie sacrée pour tous niveaux. En présentiel et en ligne.</p>
+      </div>
+      <div class="servicio-card">
+        <span class="serv-num">02</span>
+        <span class="serv-icon">⬡</span>
+        <h3><span data-lang="es">Talleres y laboratorios</span><span data-lang="fr" class="il">Ateliers et laboratoires</span></h3>
+        <p data-lang="es">Experiencias intensivas para grupos, comunidades, centros culturales y empresas.</p>
+        <p data-lang="fr">Expériences intensives pour groupes, communautés, centres culturels et entreprises.</p>
+      </div>
+      <div class="servicio-card">
+        <span class="serv-num">03</span>
+        <span class="serv-icon">🏢</span>
+        <h3><span data-lang="es">Yoga corporativo</span><span data-lang="fr" class="il">Yoga en entreprise</span></h3>
+        <p data-lang="es">Programas de bienestar para equipos de trabajo. Reduce el estrés y activa la creatividad.</p>
+        <p data-lang="fr">Programmes de bien-être pour équipes. Réduit le stress et active la créativité.</p>
+      </div>
+      <div class="servicio-card">
+        <span class="serv-num">04</span>
+        <span class="serv-icon">◎</span>
+        <h3><span data-lang="es">Yoga terapéutico</span><span data-lang="fr" class="il">Yoga thérapeutique</span></h3>
+        <p data-lang="es">Sesiones individuales enfocadas en el sistema osteomuscular con enfoque en Ayurveda.</p>
+        <p data-lang="fr">Séances individuelles axées sur le système ostéomusculaire avec une approche Ayurveda.</p>
+      </div>
+      <div class="servicio-card">
+        <span class="serv-num">05</span>
+        <span class="serv-icon">✦</span>
+        <h3><span data-lang="es">Alianzas institucionales</span><span data-lang="fr" class="il">Partenariats institutionnels</span></h3>
+        <p data-lang="es">Propuestas para museos, fundaciones, festivales de danza, centros culturales y universidades.</p>
+        <p data-lang="fr">Propositions pour musées, fondations, festivals de danse, centres culturels et universités.</p>
+      </div>
+      <div class="servicio-card">
+        <span class="serv-num">06</span>
+        <span class="serv-icon">🌐</span>
+        <h3><span data-lang="es">Clases virtuales</span><span data-lang="fr" class="il">Cours en ligne</span></h3>
+        <p data-lang="es">Sesiones en línea para practicantes en cualquier parte del mundo. GeoYoga sin fronteras.</p>
+        <p data-lang="fr">Séances en ligne pour les praticiens du monde entier. GeoYoga sans frontières.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDAR -->
+<section class="agendar" id="agendar">
+  <div class="agendar-inner">
+    <p class="section-label" style="text-align:center"><span data-lang="es">Reservar</span><span data-lang="fr" class="il">Réserver</span></p>
+    <h2 class="section-title" style="text-align:center"><span data-lang="es">Agenda tu <em>clase</em></span><span data-lang="fr" class="il">Réserve ton <em>cours</em></span></h2>
+    <div class="divider" style="margin:1.5rem auto"></div>
+    <p class="agendar-desc">
+      <span data-lang="es">Completa el formulario y recibirás respuesta en menos de 24 horas. Las clases son presenciales o virtuales.</span>
+      <span data-lang="fr" class="il">Remplis le formulaire et tu recevras une réponse en moins de 24 heures. Les cours sont en présentiel ou en ligne.</span>
+    </p>
+    <form class="agenda-form" id="agendaForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label><span data-lang="es">Nombre completo</span><span data-lang="fr" class="il">Nom complet</span></label>
+          <input type="text" id="ag-nombre" required>
+        </div>
+        <div class="form-group">
+          <label><span data-lang="es">Correo electrónico</span><span data-lang="fr" class="il">Email</span></label>
+          <input type="email" id="ag-email" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><span data-lang="es">Tipo de clase</span><span data-lang="fr" class="il">Type de cours</span></label>
+          <select id="ag-tipo" required>
+            <option value="" disabled selected>—</option>
+            <option value="GeoYoga grupal presencial">GeoYoga grupal / en groupe</option>
+            <option value="GeoYoga virtual">GeoYoga virtual / en ligne</option>
+            <option value="Yoga terapéutico individual">Yoga terapéutico / thérapeutique</option>
+            <option value="Taller o laboratorio">Taller / Atelier</option>
+            <option value="Yoga corporativo">Yoga corporativo / en entreprise</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><span data-lang="es">Disponibilidad preferida</span><span data-lang="fr" class="il">Disponibilité préférée</span></label>
+          <input type="text" id="ag-fecha" placeholder="Ej: lunes tarde / mardi soir">
+        </div>
+      </div>
+      <div class="form-group">
+        <label><span data-lang="es">Tu experiencia en yoga y lo que buscas</span><span data-lang="fr" class="il">Ton expérience en yoga et ce que tu cherches</span></label>
+        <textarea id="ag-mensaje" placeholder="Nivel, intención, preguntas..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit">
+        <svg class="poly-btn-icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="7,1 13,5 13,9 7,13 1,9 1,5" stroke="currentColor" stroke-width="1" fill="none"/>
+          <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width=".7"/>
+          <line x1="1" y1="5" x2="13" y2="9" stroke="currentColor" stroke-width=".7"/>
+          <line x1="13" y1="5" x2="1" y2="9" stroke="currentColor" stroke-width=".7"/>
+        </svg>
+        <span data-lang="es">Enviar solicitud →</span>
+        <span data-lang="fr" class="il">Envoyer la demande →</span>
+      </button>
+      <div class="form-success" id="agenda-success">
+        <span data-lang="es">✓ Solicitud enviada. Te escribiré pronto a tu correo.</span>
+        <span data-lang="fr" class="il">✓ Demande envoyée. Je t'écrirai bientôt.</span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contacto" id="contacto">
+  <div class="contacto-inner">
+    <p class="section-label"><span data-lang="es">Contacto</span><span data-lang="fr" class="il">Contact</span></p>
+    <h2 class="section-title"><span data-lang="es">¿Hablamos sobre <em>tu proyecto</em>?</span><span data-lang="fr" class="il">Parlons de <em>ton projet</em> ?</span></h2>
+    <div class="divider" style="margin:1.5rem auto"></div>
+    <p class="contacto-desc">
+      <span data-lang="es">Para propuestas de colaboración con empresas, instituciones culturales o asociaciones.</span>
+      <span data-lang="fr" class="il">Pour des propositions de collaboration avec des entreprises, institutions culturelles ou associations.</span>
+    </p>
+    <div class="contact-links">
+      <a href="mailto:geoyoga369@gmail.com" class="contact-link">
+        <span class="icon">✉</span><span>geoyoga369@gmail.com</span>
+      </a>
+      <a href="https://danzaenlaciudad.gov.co/programacion/geoyoga-circulos-agua-y-movimiento-consciente" target="_blank" class="contact-link">
+        <span class="icon">◎</span><span>GeoYoga · Danza en la Ciudad</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Geo<em>Yoga</em></div>
+  <div class="footer-links">
+    <a href="#metodo"><span data-lang="es">Método</span><span data-lang="fr" class="il">Méthode</span></a>
+    <a href="#galeria"><span data-lang="es">Galería</span><span data-lang="fr" class="il">Galerie</span></a>
+    <a href="#sobre"><span data-lang="es">Instructor</span><span data-lang="fr" class="il">Instructeur</span></a>
+    <a href="#servicios"><span data-lang="es">Servicios</span><span data-lang="fr" class="il">Services</span></a>
+    <a href="#agendar"><span data-lang="es">Agendar</span><span data-lang="fr" class="il">Réserver</span></a>
+  </div>
+  <p>geoyoga369@gmail.com</p>
+</footer>
+
+<script>
+function setLang(l){
+  document.getElementById('body-root').className='lang-'+l;
+  document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.textContent.trim().toLowerCase()===l)});
+}
+document.getElementById('agendaForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('ag-nombre').value;
+  var em=document.getElementById('ag-email').value;
+  var t=document.getElementById('ag-tipo').value;
+  var f=document.getElementById('ag-fecha').value;
+  var m=document.getElementById('ag-mensaje').value;
+  var sub=encodeURIComponent('Solicitud de clase GeoYoga – '+t);
+  var bod=encodeURIComponent('Nombre: '+n+'\nCorreo: '+em+'\nTipo de clase: '+t+'\nDisponibilidad: '+f+'\n\nMensaje:\n'+m);
+  window.location.href='mailto:geoyoga369@gmail.com?subject='+sub+'&body='+bod;
+  document.getElementById('agenda-success').style.display='block';
+  this.reset();
+});
+</script>
+</body>
+</html>
